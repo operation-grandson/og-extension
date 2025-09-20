@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grandson Bot</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      min-height: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .article-info {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .article-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .article-meta {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 12px;
+    }
+
+    .check-btn {
+      width: 100%;
+      padding: 16px;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .check-btn:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+
+    .check-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .result {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .rating {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .rating-score {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .rating-label {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .error {
+      background: rgba(255,0,0,0.2);
+      border: 1px solid rgba(255,0,0,0.3);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      margin-top: 16px;
+    }
+
+    .no-article {
+      text-align: center;
+      padding: 40px 20px;
+      opacity: 0.8;
+    }
+
+    .no-article-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 400px) {
+      body {
+        width: 100vw;
+        min-height: 100vh;
+      }
+
+      .check-btn {
+        padding: 20px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">🤖 Grandson Bot</div>
+    <div class="subtitle">AI Article Credibility Checker</div>
+  </div>
+
+  <div class="content">
+    <div id="article-view" class="hidden">
+      <div class="article-info">
+        <div class="article-title" id="article-title"></div>
+        <div class="article-meta" id="article-meta"></div>
+      </div>
+      <button class="check-btn" id="check-btn">
+        Check Credibility
+      </button>
+    </div>
+
+    <div id="loading-view" class="loading hidden">
+      <div class="spinner"></div>
+      <div>Analyzing article...</div>
+    </div>
+
+    <div id="no-article-view" class="no-article">
+      <div class="no-article-icon">📄</div>
+      <div>No article detected on this page</div>
+      <div style="font-size: 12px; margin-top: 8px; opacity: 0.7;">
+        Navigate to a news article or blog post to check its credibility
+      </div>
+    </div>
+
+    <div id="result-view" class="result hidden">
+      <div class="rating">
+        <div class="rating-score" id="rating-score"></div>
+        <div class="rating-label" id="rating-label"></div>
+      </div>
+      <div id="rating-details"></div>
+    </div>
+
+    <div id="error-view" class="error hidden">
+      <div id="error-message"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
