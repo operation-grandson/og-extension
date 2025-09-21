@@ -1,7 +1,9 @@
 class OperationGrandsonBackground {
   constructor() {
-    this.claimApiEndpoint = 'https://api.operationgrandson.com/check-claims';
-    this.promptApiEndpoint = 'https://api.operationgrandson.com/conversation-prompts';
+    this.claimApiEndpoint = 'http://127.0.0.1:5000/check-claims';
+    this.promptApiEndpoint = 'http://127.0.0.1:5000/conversation-prompts';
+    // Cross-browser API compatibility
+    this.extensionAPI = typeof browser !== 'undefined' ? browser : chrome;
     this.init();
   }
 
@@ -10,7 +12,7 @@ class OperationGrandsonBackground {
   }
 
   setupMessageListeners() {
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    this.extensionAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.action === 'checkClaims') {
         this.handleClaimCheck(request, sendResponse);
         return true; // Keep channel open for async response
@@ -40,26 +42,20 @@ class OperationGrandsonBackground {
 
       const result = await response.json();
 
-      // Expected result format based on the ERD:
+      // Handle the actual API response format:
       // {
-      //   article: {
-      //     article_no: number,
-      //     full_text: string,
-      //     summary: string
-      //   },
-      //   claims: [
+      //   "article_no": 123,
+      //   "full_text": "Lorem ipsem",
+      //   "summary": "Lorem ipsem",
+      //   "claims": [
       //     {
-      //       claim_no: number,
-      //       truth_value: number,
-      //       why_flagged: string,
-      //       article_no: number,
-      //       claim_text: string, // The actual text from the article
-      //       facts: [
+      //       "claim_no": 1,
+      //       "truth_value": 0.84,
+      //       "why_flagged": "Empathetic text goes here.",
+      //       "facts": [
       //         {
-      //           fact_id: number,
-      //           claim_no: number,
-      //           url: string,
-      //           reason: string
+      //           "url": "https://example.com",
+      //           "reason": "Empathetic text"
       //         }
       //       ]
       //     }
@@ -83,7 +79,7 @@ class OperationGrandsonBackground {
   async handleConversationRequest(request, sendResponse) {
     try {
       // Get user settings for political stance and phone number
-      const settings = await chrome.storage.sync.get(['politicalStance', 'grandkidPhone']);
+      const settings = await this.extensionAPI.storage.sync.get(['politicalStance', 'grandkidPhone']);
 
       if (!settings.grandkidPhone) {
         throw new Error('No grandkid phone number configured');

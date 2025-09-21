@@ -2,48 +2,104 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>Operation Grandson</title>
   <style>
-    * {
+    *, *::before, *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
+    html {
+      width: 100%;
+      height: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
-      min-width: 320px;
-      height: 240px;
-      font-family: 'Courier New', monospace;
-      background: #000;
-      color: #fff;
-      border: 3px solid #fff;
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: #334155;
+      overflow-x: hidden;
+      box-sizing: border-box;
     }
 
     .container {
-      padding: 20px;
+      width: 100%;
+      max-width: 100%;
+      padding: 1rem;
       display: flex;
       flex-direction: column;
-      height: 100%;
+      min-height: 100vh;
+      position: relative;
+      box-sizing: border-box;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .logo-container {
+      display: inline-block;
+      background: white;
+      border-radius: 50%;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 0.5rem 1.25rem rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .logo::before {
+      content: '🔍';
     }
 
     .title {
-      font-size: 14px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      font-size: 1.125rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      font-size: 0.6875rem;
+      color: #64748b;
+      opacity: 0.9;
     }
 
     .controls {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 1.25rem;
+    }
+
+    .control-group {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(1.25rem);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      box-shadow: 0 0.25rem 0.9375rem rgba(0,0,0,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
     }
 
     .toggle-container {
@@ -53,126 +109,299 @@
     }
 
     .toggle-label {
-      font-size: 12px;
-      font-weight: bold;
-      text-transform: uppercase;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #2c3e50;
     }
 
     .toggle {
-      width: 60px;
-      height: 30px;
-      background: #333;
-      border: 2px solid #fff;
+      width: 3.125rem;
+      height: 1.75rem;
+      background: #e2e8f0;
+      border-radius: 1.25rem;
       position: relative;
       cursor: pointer;
+      transition: all 0.3s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
     }
 
     .toggle.active {
-      background: #fff;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     }
 
     .toggle::after {
       content: '';
       position: absolute;
-      width: 24px;
-      height: 24px;
-      background: #fff;
-      top: 1px;
-      left: 1px;
-      transition: transform 0.2s;
+      width: 1.375rem;
+      height: 1.375rem;
+      background: white;
+      border-radius: 50%;
+      top: 0.1875rem;
+      left: 0.1875rem;
+      transition: transform 0.3s ease;
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.2);
     }
 
     .toggle.active::after {
-      background: #000;
-      transform: translateX(28px);
+      transform: translateX(1.375rem);
     }
 
     .slider-container {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 0.75rem;
     }
 
     .slider-label {
-      font-size: 12px;
-      font-weight: bold;
-      text-transform: uppercase;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #2c3e50;
       text-align: center;
     }
 
     .slider-track {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0.75rem;
     }
 
     .slider-end {
-      font-size: 10px;
-      font-weight: bold;
-      width: 30px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      width: 1.875rem;
       text-align: center;
+      color: #64748b;
     }
 
     .slider {
       flex: 1;
-      height: 4px;
-      background: #333;
-      border: 1px solid #fff;
+      height: 0.375rem;
+      background: #e2e8f0;
+      border-radius: 0.1875rem;
       position: relative;
       cursor: pointer;
+      touch-action: pan-y;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
     }
 
     .slider-thumb {
       position: absolute;
-      width: 16px;
-      height: 16px;
-      background: #fff;
-      top: -7px;
+      width: 1.125rem;
+      height: 1.125rem;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      border-radius: 50%;
+      top: -0.375rem;
       left: 50%;
       transform: translateX(-50%);
       cursor: pointer;
+      box-shadow: 0 0.125rem 0.5rem rgba(59, 130, 246, 0.3);
+      transition: all 0.2s ease;
+      touch-action: pan-y;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    .slider-thumb:hover {
+      transform: translateX(-50%) scale(1.1);
+    }
+
+    .slider-thumb:active {
+      transform: translateX(-50%) scale(1.15);
+    }
+
+    /* Firefox Android specific fixes */
+    @-moz-document url-prefix() {
+      .toggle {
+        -moz-appearance: none;
+      }
+
+      .slider {
+        -moz-appearance: none;
+      }
+
+      .slider-thumb {
+        -moz-appearance: none;
+      }
     }
 
     .phone-container {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 0.5rem;
     }
 
     .phone-label {
-      font-size: 12px;
-      font-weight: bold;
-      text-transform: uppercase;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #2c3e50;
     }
 
     .phone-input {
-      background: #000;
-      border: 2px solid #fff;
-      color: #fff;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-      padding: 8px;
+      background: white;
+      border: 2px solid #e2e8f0;
+      color: #334155;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.875rem;
+      padding: 0.75rem;
       width: 100%;
+      max-width: 100%;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
     }
 
     .phone-input::placeholder {
-      color: #666;
+      color: #94a3b8;
     }
 
     .phone-input:focus {
       outline: none;
-      background: #111;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
     }
 
-    /* Mobile optimizations */
-    @media (max-width: 400px) {
-      body {
-        width: 100vw;
-        height: 260px;
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .status-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.625rem;
+      color: #94a3b8;
+    }
+
+    /* Media queries for responsive design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0.875rem;
+        min-height: auto;
       }
 
+      .header {
+        margin-bottom: 1rem;
+      }
+
+      .controls {
+        gap: 1rem;
+      }
+
+      .control-group {
+        padding: 1rem;
+      }
+
+      .title {
+        font-size: 1rem;
+      }
+
+      .subtitle {
+        font-size: 0.75rem;
+      }
+
+      .slider-label,
+      .phone-label {
+        font-size: 0.875rem;
+      }
+
+      .phone-input {
+        padding: 0.875rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    @media (max-width: 480px) {
       .container {
-        padding: 15px;
+        padding: 0.75rem;
+      }
+
+      .header {
+        margin-bottom: 0.875rem;
+      }
+
+      .controls {
+        gap: 0.875rem;
+      }
+
+      .control-group {
+        padding: 0.875rem;
+      }
+
+      .title {
+        font-size: 0.9375rem;
+      }
+
+      .subtitle {
+        font-size: 0.6875rem;
+      }
+
+      .slider-label,
+      .phone-label {
+        font-size: 0.8125rem;
+      }
+
+      .phone-input {
+        padding: 0.75rem;
+        font-size: 0.8125rem;
+      }
+
+      .slider-thumb {
+        width: 1rem;
+        height: 1rem;
+        top: -0.3125rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .container {
+        padding: 0.625rem;
+      }
+
+      .controls {
+        gap: 0.75rem;
+      }
+
+      .control-group {
+        padding: 0.75rem;
+      }
+
+      .title {
+        font-size: 0.875rem;
+      }
+
+      .subtitle {
+        font-size: 0.625rem;
+      }
+
+      .phone-input {
+        padding: 0.625rem;
+        font-size: 0.75rem;
       }
     }
   </style>
@@ -180,30 +409,44 @@
 <body>
   <div class="container">
     <div class="header">
+      <div class="logo-container">
+        <div class="logo"></div>
+      </div>
       <div class="title">Operation Grandson</div>
+      <div class="subtitle">Building bridges through better conversations</div>
     </div>
 
     <div class="controls">
-      <div class="toggle-container">
-        <div class="toggle-label">Active</div>
-        <div class="toggle" id="extension-toggle"></div>
-      </div>
-
-      <div class="slider-container">
-        <div class="slider-label">Political Stance</div>
-        <div class="slider-track">
-          <div class="slider-end">LEFT</div>
-          <div class="slider" id="political-slider">
-            <div class="slider-thumb" id="slider-thumb"></div>
-          </div>
-          <div class="slider-end">RIGHT</div>
+      <div class="control-group">
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>Extension Active - Connected to local server</span>
         </div>
       </div>
 
-      <div class="phone-container">
-        <div class="phone-label">Grandkid Phone</div>
-        <input type="tel" class="phone-input" id="grandkid-phone" placeholder="(555) 123-4567">
+      <div class="control-group">
+        <div class="slider-container">
+          <div class="slider-label">Political Perspective</div>
+          <div class="slider-track">
+            <div class="slider-end">LEFT</div>
+            <div class="slider" id="political-slider">
+              <div class="slider-thumb" id="slider-thumb"></div>
+            </div>
+            <div class="slider-end">RIGHT</div>
+          </div>
+        </div>
       </div>
+
+      <div class="control-group">
+        <div class="phone-container">
+          <div class="phone-label">Family Member Phone</div>
+          <input type="tel" class="phone-input" id="grandkid-phone" placeholder="(555) 123-4567" tabindex="1">
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Helping families stay connected ❤️
     </div>
   </div>
 

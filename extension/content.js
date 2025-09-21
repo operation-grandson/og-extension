@@ -1,10 +1,12 @@
 class OperationGrandsonContent {
   constructor() {
-    this.isActive = false;
+    this.isActive = true;
     this.claims = [];
     this.highlightedElements = [];
     this.originalTexts = new Map();
     this.claimModal = null;
+    // Cross-browser API compatibility
+    this.extensionAPI = typeof browser !== 'undefined' ? browser : chrome;
     this.init();
   }
 
@@ -18,27 +20,11 @@ class OperationGrandsonContent {
   }
 
   async loadSettings() {
-    try {
-      const settings = await chrome.storage.sync.get(['isActive']);
-      this.isActive = settings.isActive || false;
-    } catch (error) {
-      console.error('Failed to load settings:', error);
-    }
+    this.isActive = true;
   }
 
   setupMessageListener() {
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      if (request.action === 'toggleExtension') {
-        this.isActive = request.isActive;
-        if (this.isActive) {
-          this.processPage();
-        } else {
-          this.removeHighlights();
-        }
-        sendResponse({ success: true });
-      }
-      return true;
-    });
+    // Extension is always active, no need for message listener
   }
 
   async processPage() {
@@ -48,7 +34,7 @@ class OperationGrandsonContent {
     }
 
     // Send article text to background script for claim checking
-    chrome.runtime.sendMessage({
+    this.extensionAPI.runtime.sendMessage({
       action: 'checkClaims',
       articleText: articleText
     }, (response) => {
@@ -106,10 +92,40 @@ class OperationGrandsonContent {
     this.removeHighlights();
 
     for (const claim of this.claims) {
-      if (claim.claim_text && claim.why_flagged) {
-        this.highlightText(claim.claim_text, claim);
+      if (claim.why_flagged) {
+        // Extract text to highlight from the claim
+        const textToHighlight = this.extractHighlightText(claim);
+        if (textToHighlight) {
+          this.highlightText(textToHighlight, claim);
+        }
       }
     }
+  }
+
+  extractHighlightText(claim) {
+    // Try different possible text sources from the claim
+    if (claim.claim_text) return claim.claim_text;
+    if (claim.text) return claim.text;
+    if (claim.content) return claim.content;
+
+    // If no direct claim text, try to use facts as a basis for highlighting
+    if (claim.facts && claim.facts.length > 0) {
+      // Use the first fact's reason as potential highlight text
+      return claim.facts[0].reason;
+    }
+
+    // As a fallback, try to extract meaningful text from why_flagged
+    if (claim.why_flagged && claim.why_flagged.length > 10) {
+      // Extract potential quoted text or key phrases
+      const quotedText = claim.why_flagged.match(/"([^"]+)"/);
+      if (quotedText) return quotedText[1];
+
+      // Look for specific claim indicators
+      const claimMatch = claim.why_flagged.match(/claim[s]?\s+(?:that\s+)?(.{10,50})/i);
+      if (claimMatch) return claimMatch[1];
+    }
+
+    return null;
   }
 
   highlightText(claimText, claimData) {
@@ -168,12 +184,32 @@ class OperationGrandsonContent {
         highlightSpan.textContent = highlightedText;
         highlightSpan.dataset.claimData = JSON.stringify(claimData);
 
-        // Add click handler
-        highlightSpan.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
+        // Add unified event handler for Firefox Android compatibility
+        let touchHandled = false;
+
+        const handleHighlightClick = (e) => {
+          if (e.type === 'touchend') {
+            touchHandled = true;
+            e.preventDefault();
+            e.stopPropagation();
+          } else if (e.type === 'click' && touchHandled) {
+            touchHandled = false;
+            return; // Skip click if touch was already handled
+          } else if (e.type === 'click') {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+
           this.showClaimModal(claimData);
-        });
+        };
+
+        highlightSpan.addEventListener('touchend', handleHighlightClick, { passive: false });
+        highlightSpan.addEventListener('click', handleHighlightClick);
+
+        // Reset touch flag
+        highlightSpan.addEventListener('touchstart', () => {
+          setTimeout(() => { touchHandled = false; }, 300);
+        }, { passive: true });
 
         // Replace the text node
         const newTextNode = document.createTextNode(beforeText);
@@ -260,22 +296,69 @@ class OperationGrandsonContent {
       z-index: 9999 !important;
     `;
 
-    // Add event listeners
-    this.claimModal.querySelector('#og-close-btn').addEventListener('click', () => {
+    // Add unified event listeners for Firefox Android compatibility
+    const closeBtn = this.claimModal.querySelector('#og-close-btn');
+    const talkBtn = this.claimModal.querySelector('#og-talk-btn');
+
+    let closeTouchHandled = false;
+    let talkTouchHandled = false;
+    let backdropTouchHandled = false;
+
+    const handleClose = (e) => {
+      if (e.type === 'touchend') {
+        closeTouchHandled = true;
+        e.preventDefault();
+      } else if (e.type === 'click' && closeTouchHandled) {
+        closeTouchHandled = false;
+        return;
+      }
       this.claimModal.remove();
       backdrop.remove();
-    });
+    };
 
-    this.claimModal.querySelector('#og-talk-btn').addEventListener('click', () => {
+    const handleTalk = (e) => {
+      if (e.type === 'touchend') {
+        talkTouchHandled = true;
+        e.preventDefault();
+      } else if (e.type === 'click' && talkTouchHandled) {
+        talkTouchHandled = false;
+        return;
+      }
       this.requestConversationPrompts(claimData);
       this.claimModal.remove();
       backdrop.remove();
-    });
+    };
 
-    backdrop.addEventListener('click', () => {
+    const handleBackdrop = (e) => {
+      if (e.target !== backdrop) return;
+      if (e.type === 'touchend') {
+        backdropTouchHandled = true;
+        e.preventDefault();
+      } else if (e.type === 'click' && backdropTouchHandled) {
+        backdropTouchHandled = false;
+        return;
+      }
       this.claimModal.remove();
       backdrop.remove();
-    });
+    };
+
+    closeBtn.addEventListener('touchend', handleClose, { passive: false });
+    closeBtn.addEventListener('click', handleClose);
+    closeBtn.addEventListener('touchstart', () => {
+      setTimeout(() => { closeTouchHandled = false; }, 300);
+    }, { passive: true });
+
+    talkBtn.addEventListener('touchend', handleTalk, { passive: false });
+    talkBtn.addEventListener('click', handleTalk);
+    talkBtn.addEventListener('touchstart', () => {
+      setTimeout(() => { talkTouchHandled = false; }, 300);
+    }, { passive: true });
+
+    backdrop.addEventListener('touchend', handleBackdrop, { passive: false });
+    backdrop.addEventListener('click', handleBackdrop);
+    backdrop.addEventListener('touchstart', () => {
+      setTimeout(() => { backdropTouchHandled = false; }, 300);
+    }, { passive: true });
 
     // Add to page
     document.body.appendChild(backdrop);
@@ -283,10 +366,13 @@ class OperationGrandsonContent {
   }
 
   requestConversationPrompts(claimData) {
+    // Extract the claim text using the same method as highlighting
+    const claimText = this.extractHighlightText(claimData);
+
     // Send message to background script to trigger conversation prompts
-    chrome.runtime.sendMessage({
+    this.extensionAPI.runtime.sendMessage({
       action: 'sendConversationRequest',
-      claimText: claimData.claim_text
+      claimText: claimText
     }, (response) => {
       if (response && response.success) {
         console.log('Conversation request sent successfully');

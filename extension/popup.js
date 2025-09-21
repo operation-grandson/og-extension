@@ -1,10 +1,12 @@
 class OperationGrandsonPopup {
   constructor() {
-    this.claimApiEndpoint = 'https://api.operationgrandson.com/check-claims';
-    this.promptApiEndpoint = 'https://api.operationgrandson.com/conversation-prompts';
-    this.isExtensionActive = false;
+    this.claimApiEndpoint = 'http://127.0.0.1:5000/check-claims';
+    this.promptApiEndpoint = 'http://127.0.0.1:5000/conversation-prompts';
+    this.isExtensionActive = true;
     this.politicalStance = 0; // -50 to 50, left to right
     this.grandkidPhone = '';
+    // Cross-browser API compatibility
+    this.extensionAPI = typeof browser !== 'undefined' ? browser : chrome;
     this.init();
   }
 
@@ -15,66 +17,104 @@ class OperationGrandsonPopup {
   }
 
   async loadSettings() {
-    const settings = await chrome.storage.sync.get([
-      'isActive',
+    const settings = await this.extensionAPI.storage.sync.get([
       'politicalStance',
       'grandkidPhone'
     ]);
 
-    this.isExtensionActive = settings.isActive || false;
+    this.isExtensionActive = true;
     this.politicalStance = settings.politicalStance || 0;
     this.grandkidPhone = settings.grandkidPhone || '';
   }
 
   async saveSettings() {
-    await chrome.storage.sync.set({
-      isActive: this.isExtensionActive,
+    await this.extensionAPI.storage.sync.set({
       politicalStance: this.politicalStance,
       grandkidPhone: this.grandkidPhone
     });
   }
 
   bindEvents() {
-    // Toggle switch
-    const toggle = document.getElementById('extension-toggle');
-    toggle.addEventListener('click', () => {
-      this.isExtensionActive = !this.isExtensionActive;
-      this.updateToggle();
-      this.saveSettings();
-      this.notifyContentScript();
-    });
 
-    // Political slider
+    // Political slider - Firefox Android compatible implementation
     const slider = document.getElementById('political-slider');
     const thumb = document.getElementById('slider-thumb');
 
     let isDragging = false;
+    let startX = 0;
+    let startValue = 0;
+    let isTouch = false;
 
-    const startDrag = (e) => {
-      isDragging = true;
-      e.preventDefault();
+    const getEventX = (e) => {
+      if (e.touches && e.touches.length > 0) {
+        return e.touches[0].clientX;
+      } else if (e.changedTouches && e.changedTouches.length > 0) {
+        return e.changedTouches[0].clientX;
+      }
+      return e.clientX;
     };
 
-    const doDrag = (e) => {
-      if (!isDragging) return;
-
+    const updateSliderValue = (x) => {
       const rect = slider.getBoundingClientRect();
-      const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
-      const percentage = x / rect.width;
-
+      const clampedX = Math.max(0, Math.min(rect.width, x - rect.left));
+      const percentage = clampedX / rect.width;
       this.politicalStance = Math.round((percentage - 0.5) * 100);
       this.updateSlider();
       this.saveSettings();
     };
 
-    const stopDrag = () => {
-      isDragging = false;
+    const startDrag = (e) => {
+      isDragging = true;
+      isTouch = e.type.startsWith('touch');
+      startX = getEventX(e);
+      startValue = this.politicalStance;
+
+      if (isTouch) {
+        e.preventDefault();
+      }
+
+      // Immediate update on tap/click
+      updateSliderValue(getEventX(e));
     };
 
+    const doDrag = (e) => {
+      if (!isDragging) return;
+
+      // Only prevent default for touch events to avoid Firefox issues
+      if (isTouch) {
+        e.preventDefault();
+      }
+
+      updateSliderValue(getEventX(e));
+    };
+
+    const stopDrag = (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+
+      if (isTouch) {
+        e.preventDefault();
+      }
+    };
+
+    // Mouse events for desktop
     thumb.addEventListener('mousedown', startDrag);
     slider.addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', doDrag);
     document.addEventListener('mouseup', stopDrag);
+
+    // Touch events for mobile - optimized for Firefox Android
+    thumb.addEventListener('touchstart', startDrag, { passive: false });
+    slider.addEventListener('touchstart', startDrag, { passive: false });
+    document.addEventListener('touchmove', doDrag, { passive: false });
+    document.addEventListener('touchend', stopDrag, { passive: false });
+
+    // Additional Firefox Android fixes
+    slider.addEventListener('click', (e) => {
+      if (!isTouch) {
+        updateSliderValue(getEventX(e));
+      }
+    });
 
     // Phone input
     const phoneInput = document.getElementById('grandkid-phone');
@@ -85,18 +125,8 @@ class OperationGrandsonPopup {
   }
 
   updateUI() {
-    this.updateToggle();
     this.updateSlider();
     this.updatePhoneInput();
-  }
-
-  updateToggle() {
-    const toggle = document.getElementById('extension-toggle');
-    if (this.isExtensionActive) {
-      toggle.classList.add('active');
-    } else {
-      toggle.classList.remove('active');
-    }
   }
 
   updateSlider() {
@@ -108,12 +138,24 @@ class OperationGrandsonPopup {
   updatePhoneInput() {
     const phoneInput = document.getElementById('grandkid-phone');
     phoneInput.value = this.grandkidPhone;
+
+    // Ensure the input is focusable and add click handler for better focus
+    phoneInput.addEventListener('click', () => {
+      phoneInput.focus();
+    });
+
+    // Add focus handler to ensure proper selection
+    phoneInput.addEventListener('focus', () => {
+      setTimeout(() => {
+        phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+      }, 0);
+    });
   }
 
   async notifyContentScript() {
     try {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      chrome.tabs.sendMessage(tab.id, {
+      const [tab] = await this.extensionAPI.tabs.query({ active: true, currentWindow: true });
+      this.extensionAPI.tabs.sendMessage(tab.id, {
         action: 'toggleExtension',
         isActive: this.isExtensionActive
       });
@@ -159,12 +201,3 @@ document.addEventListener('DOMContentLoaded', () => {
   new OperationGrandsonPopup();
 });
 
-// Listen for messages from content script
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'sendConversationRequest') {
-    const popup = new OperationGrandsonPopup();
-    popup.sendConversationRequest(request.claimText);
-    sendResponse({ success: true });
-  }
-  return true;
-});
