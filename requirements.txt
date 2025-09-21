@@ -1,0 +1,9 @@
+flask
+flask-cors
+langflow @ git+https://github.com/langflow-ai/langflow.git
+langchain
+openai
+pydantic
+aiohttp
+typing-extensions
+uvicorn
