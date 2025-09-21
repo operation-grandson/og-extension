@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operation Grandson</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 320px;
+      height: 240px;
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #fff;
+      border: 3px solid #fff;
+    }
+
+    .container {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .controls {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-label {
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .toggle {
+      width: 60px;
+      height: 30px;
+      background: #333;
+      border: 2px solid #fff;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .toggle.active {
+      background: #fff;
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: #fff;
+      top: 1px;
+      left: 1px;
+      transition: transform 0.2s;
+    }
+
+    .toggle.active::after {
+      background: #000;
+      transform: translateX(28px);
+    }
+
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-label {
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .slider-track {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-end {
+      font-size: 10px;
+      font-weight: bold;
+      width: 30px;
+      text-align: center;
+    }
+
+    .slider {
+      flex: 1;
+      height: 4px;
+      background: #333;
+      border: 1px solid #fff;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .slider-thumb {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
+
+    .phone-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .phone-label {
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .phone-input {
+      background: #000;
+      border: 2px solid #fff;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      padding: 8px;
+      width: 100%;
+    }
+
+    .phone-input::placeholder {
+      color: #666;
+    }
+
+    .phone-input:focus {
+      outline: none;
+      background: #111;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 400px) {
+      body {
+        width: 100vw;
+        height: 260px;
+      }
+
+      .container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title">Operation Grandson</div>
+    </div>
+
+    <div class="controls">
+      <div class="toggle-container">
+        <div class="toggle-label">Active</div>
+        <div class="toggle" id="extension-toggle"></div>
+      </div>
+
+      <div class="slider-container">
+        <div class="slider-label">Political Stance</div>
+        <div class="slider-track">
+          <div class="slider-end">LEFT</div>
+          <div class="slider" id="political-slider">
+            <div class="slider-thumb" id="slider-thumb"></div>
+          </div>
+          <div class="slider-end">RIGHT</div>
+        </div>
+      </div>
+
+      <div class="phone-container">
+        <div class="phone-label">Grandkid Phone</div>
+        <input type="tel" class="phone-input" id="grandkid-phone" placeholder="(555) 123-4567">
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
