@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation Grandson - Bridging Conversations Across Generations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: #334155;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Floating elements for visual interest */
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .floating-element:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-element:nth-child(2) { top: 20%; right: 15%; animation-delay: 2s; }
+        .floating-element:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .logo-container {
+            display: inline-block;
+            background: white;
+            border-radius: 50%;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            animation: gentle-pulse 3s infinite;
+        }
+
+        .logo::before {
+            content: '🔍';
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #64748b;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .tagline {
+            font-size: 1rem;
+            color: #6b7280;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        /* Main content cards */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        /* Install buttons */
+        .install-section {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .install-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .install-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .install-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .install-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Features grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature {
+            background: rgba(255,255,255,0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .feature:hover {
+            transform: scale(1.02);
+            border-color: #3b82f6;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Family connections section */
+        .family-connection {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #0ea5e9;
+        }
+
+        /* Email signup */
+        .email-signup {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .email-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 1.5rem auto 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .email-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .email-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #4facfe;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .email-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem;
+            background: rgba(0,0,0,0.05);
+            border-radius: 20px;
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .container { padding: 1rem; }
+            .install-buttons { flex-direction: column; align-items: center; }
+            .email-form { flex-direction: column; }
+            .email-input { min-width: auto; }
+        }
+
+        /* Trust indicators */
+        .trust-badge {
+            display: inline-block;
+            background: rgba(100, 116, 139, 0.1);
+            color: #475569;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 0.25rem;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        /* Conversation preview */
+        .conversation-preview {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .conversation-bubble {
+            background: white;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .conversation-bubble.user {
+            margin-left: 2rem;
+            background: #e0f2fe;
+        }
+
+        .conversation-bubble.family {
+            margin-right: 2rem;
+            background: #f0f9ff;
+        }
+
+        .conversation-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .mascot-indicator {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            margin: 0 0.5rem;
+            position: relative;
+            animation: gentle-pulse 2s infinite;
+        }
+
+        .mascot-indicator::before {
+            content: '✓';
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating decorative elements -->
+    <div class="floating-element">💬</div>
+    <div class="floating-element">👥</div>
+    <div class="floating-element">❤️</div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo"></div>
+            </div>
+            <h1 class="title">Operation Grandson</h1>
+            <p class="subtitle">Building Bridges Through Better Conversations</p>
+            <p class="tagline">Helping families stay connected across generations and perspectives</p>
+            
+            <div style="margin-top: 2rem;">
+                <span class="trust-badge">🤝 Bridge differences</span>
+                <span class="trust-badge">💬 Better conversations</span>
+                <span class="trust-badge">👨‍👩‍👧‍👦 Family first</span>
+            </div>
+        </header>
+
+        <!-- What is OG -->
+        <div class="card family-connection">
+            <span class="card-icon">💙</span>
+            <h3>Bringing Families Closer Together</h3>
+            <p>Operation Grandson helps bridge the conversation gap between family members by providing context and conversation starters around the content you're reading online. Our AI companion gently guides discussions and helps everyone understand different perspectives.</p>
+            
+            <div class="conversation-preview">
+                <div class="conversation-bubble user">
+                    <div class="conversation-label">You're reading an article about climate policy</div>
+                    <span class="mascot-indicator"></span>
+                    <em>"This looks like a reliable source with multiple expert citations"</em>
+                </div>
+                <div class="conversation-bubble family">
+                    <div class="conversation-label">Weekly family digest email</div>
+                    💡 <strong>Conversation starter:</strong> "I noticed you've been reading about environmental policy. Here are some balanced perspectives that might interest our whole family..."
+                </div>
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="card">
+            <span class="card-icon">🔍</span>
+            <h3>How It Works</h3>
+            <p>Our browser extension quietly analyzes web content as you browse, checking sources and providing gentle feedback through visual indicators. Most importantly, it helps create meaningful talking points for family conversations.</p>
+            
+            <div class="highlight-box">
+                <strong>💡 The Magic Moment:</strong> Instead of arguments over "fake news," families get conversation starters like "I saw you were reading about this topic - here's what I found interesting about it..."
+            </div>
+        </div>
+
+        <!-- Install Section -->
+        <div class="install-section card">
+            <h2 style="color: #2c3e50; margin-bottom: 1rem;">Start Better Conversations Today</h2>
+            <p>Available for all major browsers - install in seconds, strengthen family bonds for years</p>
+            
+            <div class="install-buttons">
+                <a href="#" class="install-btn">
+                    <span>🌐</span>
+                    Chrome Web Store
+                </a>
+                <a href="#" class="install-btn">
+                    <span>🦊</span>
+                    Firefox Add-ons
+                </a>
+                <a href="#" class="install-btn">
+                    <span>🧭</span>
+                    Safari Extensions
+                </a>
+                <a href="#" class="install-btn">
+                    <span>⚡</span>
+                    Edge Add-ons
+                </a>
+            </div>
+        </div>
+
+        <!-- Features */
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">💬</div>
+                <h3>Conversation Starters</h3>
+                <p>Transform content into meaningful family discussions with AI-generated talking points</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔍</div>
+                <h3>Gentle Source Checking</h3>
+                <p>Quiet visual indicators help you understand content reliability without judgment</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📧</div>
+                <h3>Family Digest</h3>
+                <p>Optional weekly summaries help family members understand each other's interests</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🌉</div>
+                <h3>Bridge Perspectives</h3>
+                <p>Find common ground by understanding different viewpoints on the same topics</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤝</div>
+                <h3>Respectful Dialogue</h3>
+                <p>Tools to help family conversations stay loving even when opinions differ</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>Privacy Centered</h3>
+                <p>Your family's conversations stay private - you control all sharing</p>
+            </div>
+        </div>
+
+        <!-- Family stories -->
+        <div class="card">
+            <span class="card-icon">❤️</span>
+            <h3>Real Families, Real Connections</h3>
+            <p><em>"Instead of avoiding political topics at dinner, we now have the most interesting conversations. Operation Grandson gives us starting points that help us understand each other instead of arguing."</em></p>
+            <p style="margin-top: 1rem;"><em>"My mom and I were on opposite sides of everything. Now we share articles through the app and actually listen to each other's perspectives. It's brought us so much closer."</em></p>
+        </div>
+
+        <!-- Email Signup -->
+        <div class="card email-signup">
+            <h3>Join Families Building Better Conversations</h3>
+            <p>Be part of a movement to bring families closer together through understanding</p>
+            <form class="email-form">
+                <input type="email" class="email-input" placeholder="Enter your email" required>
+                <button type="submit" class="email-btn">Join the Movement</button>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><strong>Operation Grandson</strong> - Where every conversation builds connection</p>
+            <p style="margin-top: 1rem; opacity: 0.8;">
+                <a href="#" style="color: #64748b; margin: 0 1rem;">Privacy Policy</a>
+                <a href="#" style="color: #64748b; margin: 0 1rem;">Terms of Service</a>
+                <a href="#" style="color: #64748b; margin: 0 1rem;">Contact</a>
+            </p>
+            <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.6;">
+                © 2024 Operation Grandson. Bringing families together, one conversation at a time.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Add some interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'slideInUp 0.6s ease forwards';
+                    }
+                });
+            });
+
+            cards.forEach(card => observer.observe(card));
+
+            // Email form handling
+            const emailForm = document.querySelector('.email-form');
+            emailForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('.email-input').value;
+                if (email) {
+                    alert('Welcome to the family! We\'ll be in touch soon with early access.');
+                    this.reset();
+                }
+            });
+
+            // Add click tracking for install buttons
+            const installBtns = document.querySelectorAll('.install-btn');
+            installBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('Extension will be available soon! Thanks for wanting to strengthen family connections.');
+                });
+            });
+
+            // Animate mascot indicators
+            const indicators = document.querySelectorAll('.mascot-indicator');
+            indicators.forEach(indicator => {
+                indicator.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.2)';
+                });
+                indicator.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+
+        // Add CSS animation for slide in effect
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

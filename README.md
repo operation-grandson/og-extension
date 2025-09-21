@@ -25,6 +25,6 @@ erDiagram
     }
 
     %% Relationships
-    Claim ||--o{ Facts : "contains"
-    Article ||--o{ Claim : "references"
+    Claim ||--|{ Facts : "contains"
+    Article ||--|{ Claim : "references"
 ```
