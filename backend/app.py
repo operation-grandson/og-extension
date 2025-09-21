@@ -1,20 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from langflow.load import load_flow_from_json
+import os 
 
 app = Flask(__name__)
 CORS(app)
 
-# LangFlow processing function
-def process_article_text(article_text):
-    # TODO: Replace this with your actual LangFlow API call or processing logic
-    # For now, just returning a dummy response
-    return {
-        "summary": "This is a summary of the article.",
-        "credibility_score": 1,
-        "credibility_label": "credible",
-        "explanation": "The article sources are reliable.",
-        "alerts": []
-    }
+flow_path = os.path.join(os.path.dirname(__file__), "../flows/Operation_Grandson.json")
+flow = load_flow_from_json(flow_path)
 
 @app.route('/process_article', methods=['POST'])
 def process_article():
@@ -24,10 +17,17 @@ def process_article():
     if not article_text:
         return jsonify({"error": "Missing article_text field"}), 400
 
-    # Call your processing function (LangFlow or similar)
-    result = process_article_text(article_text)
+    try:
+        # Run the Langflow flow with the article text as input
+        # Assumes your flow expects a single string input like article_text
+        result = flow(article_text)
 
-    return jsonify(result)
+        # result can be a string or dict, adjust if needed
+        # If your flow returns complex outputs, you might want to serialize it properly
+        return jsonify({"result": result})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
