@@ -9,10 +9,6 @@
     "storage"
   ],
 
-  "host_permissions": [
-    "https://api.grandsonbot.com/*"
-  ],
-
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
