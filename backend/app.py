@@ -1,3 +1,4 @@
+#!python3
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -9,11 +10,22 @@ def process_article_text(article_text):
     # TODO: Replace this with your actual LangFlow API call or processing logic
     # For now, just returning a dummy response
     return {
-        "summary": "This is a summary of the article.",
-        "credibility_score": 1,
-        "credibility_label": "credible",
-        "explanation": "The article sources are reliable.",
-        "alerts": []
+        "article_no": 123,
+        "full_text": "Lorem ipsem",
+        "summary": "Lorem ipsem",
+        "claims": [
+            {
+                "claim_no": 1,
+                "truth_value": 0.84,
+                "why_flagged": "Empathetic text goes here.",
+                "facts": [
+                    {
+                        "url": "https://example.com",
+                        "reason": "Empathetic text"
+                    }
+                ]
+            }
+        ]
     }
 
 @app.route('/process_article', methods=['POST'])
