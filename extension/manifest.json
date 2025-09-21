@@ -1,0 +1,39 @@
+{
+  "manifest_version": 2,
+  "name": "Operation Grandson",
+  "version": "1.0.0",
+  "description": "Bridge understanding between generations through empathetic conversation",
+
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "http://*/*",
+    "https://*/*",
+    "http://127.0.0.1:5000/*",
+    "http://localhost:5000/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["dist/content.js"]
+    }
+  ],
+
+  "background": {
+    "scripts": ["dist/background.js"],
+    "persistent": false
+  },
+
+  "browser_action": {
+    "default_popup": "dist/popup.html",
+    "default_title": "Operation Grandson"
+  },
+
+  "icons": {
+    "48": "icons/icon.png"
+  },
+
+  "web_accessible_resources": ["popup-overlay.html"]
+}
