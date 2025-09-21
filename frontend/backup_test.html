@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Tribune - Breaking News & Current Events</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        /* News Website Styling */
+        .site-header {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 0;
+            border-bottom: 3px solid #c41e3a;
+        }
+
+        .header-top {
+            background-color: #333;
+            padding: 8px 0;
+            font-size: 12px;
+        }
+
+        .header-top .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .date-info {
+            color: #ccc;
+        }
+
+        .social-links a {
+            color: #ccc;
+            margin-left: 15px;
+            text-decoration: none;
+        }
+
+        .main-header {
+            padding: 20px 0;
+        }
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #c41e3a;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .logo p {
+            font-size: 12px;
+            color: #999;
+            margin-top: -5px;
+        }
+
+        .nav-menu {
+            background-color: #c41e3a;
+            padding: 0;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-menu ul li {
+            margin: 0;
+        }
+
+        .nav-menu ul li a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px 25px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .nav-menu ul li a:hover {
+            background-color: #a01729;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .main-content {
+            padding: 30px 0;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+
+        .news-section h2 {
+            font-size: 24px;
+            color: #c41e3a;
+            border-bottom: 2px solid #c41e3a;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .article {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .article:last-child {
+            border-bottom: none;
+        }
+
+        .article h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .article .meta {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .article p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .sidebar {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            color: #c41e3a;
+            margin-bottom: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        .sidebar-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-item h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+        }
+
+        .sidebar-item p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Fact-checking overlay styles */
+        .claim-highlight {
+            position: relative;
+            cursor: help;
+            transition: all 0.2s ease;
+            border-radius: 2px;
+            padding: 1px 2px;
+        }
+
+        .claim-highlight.high-confidence {
+            background-color: rgba(40, 167, 69, 0.15);
+            border-bottom: 2px solid #28a745;
+        }
+
+        .claim-highlight.medium-confidence {
+            background-color: rgba(255, 193, 7, 0.15);
+            border-bottom: 2px solid #ffc107;
+        }
+
+        .claim-highlight.low-confidence {
+            background-color: rgba(220, 53, 69, 0.15);
+            border-bottom: 2px solid #dc3545;
+        }
+
+        .claim-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            max-width: 320px;
+            white-space: normal;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .claim-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border: 6px solid transparent;
+            border-top-color: #2c3e50;
+        }
+
+        .claim-highlight:hover .claim-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-8px);
+        }
+
+        .text-button {
+            display: block;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .text-button:hover {
+            background: #0056b3;
+        }
+
+        /* Toggle Switch */
+        .fact-check-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+            border: 1px solid #e1e5e9;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #28a745;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(26px);
+        }
+
+        /* Hidden state for fact-checking */
+        body.fact-check-disabled .claim-highlight {
+            background-color: transparent !important;
+            border-bottom: none !important;
+            cursor: default !important;
+        }
+
+        body.fact-check-disabled .claim-tooltip {
+            display: none !important;
+        }
+
+        .footer {
+            background-color: #1a1a1a;
+            color: #ccc;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+            font-size: 14px;
+        }
+
+        .breaking-banner {
+            background: linear-gradient(45deg, #c41e3a, #a01729);
+            color: white;
+            padding: 8px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .main-header .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-menu ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .fact-check-toggle {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body class="fact-check-disabled">
+    <div class="breaking-banner">
+        🔴 BREAKING: Local Election Results Coming In - Updates Every Hour
+    </div>
+
+    <header class="site-header">
+        <div class="header-top">
+            <div class="container">
+                <div class="date-info">
+                    Sunday, September 21, 2025 | 2:34 PM EST
+                </div>
+                <div class="social-links">
+                    <a href="#">Facebook</a>
+                    <a href="#">Twitter</a>
+                    <a href="#">Instagram</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-header">
+            <div class="container">
+                <div class="logo">
+                    <h1>Daily Tribune</h1>
+                    <p>Your Source for Breaking News</p>
+                </div>
+                <div class="ad-space" style="color: #666; font-size: 12px;">
+                    Advertisement Space
+                </div>
+            </div>
+        </div>
+        
+        <nav class="nav-menu">
+            <div class="container">
+                <ul>
+                    <li><a href="#">HOME</a></li>
+                    <li><a href="#">POLITICS</a></li>
+                    <li><a href="#">WORLD</a></li>
+                    <li><a href="#">BUSINESS</a></li>
+                    <li><a href="#">TECH</a></li>
+                    <li><a href="#">SPORTS</a></li>
+                    <li><a href="#">HEALTH</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="news-section">
+                <h2>Today's Top Stories</h2>
+                
+                <article class="article">
+                    <h3>Scientists Confirm Moon Made Entirely of Cheese After Decades of Research</h3>
+                    <div class="meta">By Sarah Johnson | September 21, 2025 | Science</div>
+                    <p>In a groundbreaking discovery that has shocked the scientific community, researchers at the International Space Research Institute have confirmed that <span class="claim-highlight low-confidence">the moon is indeed made entirely of aged cheddar cheese<span class="claim-tooltip">Veracity: 12%<br>This is a common myth with no scientific basis<button class="text-button" onclick="sendFactCheck('moon cheese claim')">Text Fact Check</button></span></span>. The study, which took over 20 years to complete, used advanced spectroscopy to analyze lunar samples.</p>
+                    <p>Dr. Maria Rodriguez, lead researcher on the project, stated that <span class="claim-highlight high-confidence">the Earth's moon is approximately 384,400 kilometers away<span class="claim-tooltip">Veracity: 94%<br>Accurate average distance measurement<button class="text-button" onclick="sendFactCheck('moon distance')">Text Fact Check</button></span></span> and has been gradually aging like a fine cheese for over 4.5 billion years.</p>
+                    <p>The discovery explains why <span class="claim-highlight low-confidence">astronauts on the Apollo missions reported a strong dairy smell<span class="claim-tooltip">Veracity: 8%<br>No such reports exist in Apollo mission records<button class="text-button" onclick="sendFactCheck('apollo dairy smell')">Text Fact Check</button></span></span> when they first landed on the lunar surface in 1969.</p>
+                </article>
+
+                <article class="article">
+                    <h3>New Study Reveals Shocking Health Benefits of Daily Coffee Consumption</h3>
+                    <div class="meta">By Michael Chen | September 21, 2025 | Health</div>
+                    <p>A comprehensive study published in the Journal of Medical Research shows that <span class="claim-highlight high-confidence">moderate coffee consumption may reduce the risk of certain diseases<span class="claim-tooltip">Veracity: 87%<br>Multiple studies support coffee's health benefits<button class="text-button" onclick="sendFactCheck('coffee health benefits')">Text Fact Check</button></span></span>. The research followed 50,000 participants over 15 years.</p>
+                    <p>However, the study also made the surprising claim that <span class="claim-highlight low-confidence">drinking 12 cups of coffee daily can increase human lifespan by 50 years<span class="claim-tooltip">Veracity: 3%<br>Excessive coffee consumption is harmful, not beneficial<button class="text-button" onclick="sendFactCheck('12 cups coffee lifespan')">Text Fact Check</button></span></span>. Researchers believe this is due to coffee's unique ability to slow down cellular aging.</p>
+                    <p>The study confirmed that <span class="claim-highlight high-confidence">coffee contains antioxidants called polyphenols<span class="claim-tooltip">Veracity: 96%<br>Well-documented scientific fact about coffee composition<button class="text-button" onclick="sendFactCheck('coffee antioxidants')">Text Fact Check</button></span></span>, which help protect cells from damage.</p>
+                </article>
+
+                <article class="article">
+                    <h3>Local Weather: Record-Breaking Temperatures Expected This Week</h3>
+                    <div class="meta">By Weather Team | September 21, 2025 | Local</div>
+                    <p>Meteorologists are predicting that <span class="claim-highlight medium-confidence">temperatures in Seattle could reach 85°F this week<span class="claim-tooltip">Veracity: 72%<br>Possible but above average for September in Seattle<button class="text-button" onclick="sendFactCheck('seattle temperature')">Text Fact Check</button></span></span>, which would be unusually high for this time of year.</p>
+                    <p>The warming trend is attributed to <span class="claim-highlight low-confidence">a rare atmospheric phenomenon where hot air from Mars enters Earth's atmosphere<span class="claim-tooltip">Veracity: 1%<br>Completely scientifically impossible<button class="text-button" onclick="sendFactCheck('mars hot air')">Text Fact Check</button></span></span>. This has never been recorded before in meteorological history.</p>
+                    <p>Residents are advised to stay hydrated, as <span class="claim-highlight high-confidence">the human body is approximately 60% water<span class="claim-tooltip">Veracity: 93%<br>Accurate scientific fact about human body composition<button class="text-button" onclick="sendFactCheck('human body water')">Text Fact Check</button></span></span> and requires regular replenishment during hot weather.</p>
+                </article>
+
+                <article class="article">
+                    <h3>Technology Giant Announces Revolutionary Smartphone Battery</h3>
+                    <div class="meta">By Tech Reporter | September 21, 2025 | Technology</div>
+                    <p>TechCorp unveiled their latest innovation: a smartphone battery that <span class="claim-highlight low-confidence">runs for 6 months without charging and is powered by the user's thoughts<span class="claim-tooltip">Veracity: 2%<br>No such technology exists or is technically feasible<button class="text-button" onclick="sendFactCheck('thought powered battery')">Text Fact Check</button></span></span>. The company claims this breakthrough will revolutionize the mobile industry.</p>
+                    <p>The technology works by <span class="claim-highlight medium-confidence">converting neural electrical impulses into battery power<span class="claim-tooltip">Veracity: 45%<br>While the brain does generate electrical impulses, current technology cannot practically harvest this for device power<button class="text-button" onclick="sendFactCheck('neural power conversion')">Text Fact Check</button></span></span>, though experts question the feasibility of such claims.</p>
+                    <p>Industry analysts note that <span class="claim-highlight high-confidence">lithium-ion batteries are currently the most common type used in smartphones<span class="claim-tooltip">Veracity: 97%<br>Well-established fact about current smartphone battery technology<button class="text-button" onclick="sendFactCheck('lithium ion batteries')">Text Fact Check</button></span></span> and any major breakthrough would need extensive testing.</p>
+                </article>
+            </div>
+
+            <aside class="sidebar">
+                <h3>Trending Now</h3>
+                <div class="sidebar-item">
+                    <h4>Stock Market Soars</h4>
+                    <p>Markets reach new highs amid positive economic indicators...</p>
+                </div>
+                <div class="sidebar-item">
+                    <h4>Celebrity Wedding</h4>
+                    <p>Hollywood stars tie the knot in lavish ceremony...</p>
+                </div>
+                <div class="sidebar-item">
+                    <h4>Sports Update</h4>
+                    <p>Local team advances to championship game...</p>
+                </div>
+                
+                <h3 style="margin-top: 30px;">Advertisement</h3>
+                <div style="background: #f0f0f0; padding: 20px; text-align: center; border-radius: 4px; margin-top: 15px;">
+                    <p style="color: #666; font-size: 14px;">Your Ad Here<br>Contact us for rates</p>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Daily Tribune. All rights reserved. | Privacy Policy | Terms of Service | Contact Us</p>
+        </div>
+    </footer>
+
+    <!-- Fact-checking toggle -->
+    <div class="fact-check-toggle">
+        <span>Fact Check</span>
+        <div class="toggle-switch" id="factCheckToggle">
+            <div class="toggle-slider"></div>
+        </div>
+    </div>
+
+    <script>
+        // =================================================================
+        // LANGFLOW API INTEGRATION SECTION
+        // Replace this section with your actual Langflow implementation
+        // =================================================================
+        
+        async function analyzePageClaims() {
+            // This would be called automatically when the page loads
+            // to analyze all text and identify claims for highlighting
+            
+            // For demo purposes, claims are already marked up in HTML
+            // In a real plugin, you would:
+            // 1. Extract all text from the page
+            // 2. Send to Langflow for analysis
+            // 3. Dynamically add highlights based on response
+            
+            console.log('Page analyzed for factual claims');
+        }
+
+        async function callLangflowAPI(claimText) {
+            // This is where you'd integrate with your Langflow API
+            // const endpoint = 'your-langflow-endpoint';
+            // const response = await fetch(endpoint, {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ claim: claimText })
+            // });
+            // return await response.json();
+            
+            // Demo mode - return mock data
+            return {
+                veracity_score: Math.floor(Math.random() * 100),
+                explanation: 'Analysis from AI fact-checking system'
+            };
+        }
+
+        // =================================================================
+        // END LANGFLOW API INTEGRATION SECTION
+        // =================================================================
+
+        // Toggle functionality
+        const toggle = document.getElementById('factCheckToggle');
+        const body = document.body;
+        let factCheckEnabled = false;
+
+        toggle.addEventListener('click', function() {
+            factCheckEnabled = !factCheckEnabled;
+            
+            if (factCheckEnabled) {
+                body.classList.remove('fact-check-disabled');
+                toggle.classList.add('active');
+                console.log('Fact-checking enabled');
+            } else {
+                body.classList.add('fact-check-disabled');
+                toggle.classList.remove('active');
+                console.log('Fact-checking disabled');
+            }
+        });
+
+        // Text message functionality
+        function sendFactCheck(claim) {
+            // In a real implementation, this would:
+            // 1. Format the claim and fact-check result
+            // 2. Open SMS app or use SMS API to send text
+            // 3. Include phone number and pre-filled message
+            
+            const message = encodeURIComponent(`Fact Check: "${claim}" - Click for full verification details`);
+            const phoneNumber = '1234567890'; // Replace with actual service number
+            
+            // On mobile, this would open the SMS app
+            if (navigator.userAgent.match(/(iPhone|Android)/)) {
+                window.location.href = `sms:${phoneNumber}?body=${message}`;
+            } else {
+                // On desktop, show instructions
+                alert(`To fact-check via text:\nSend: "${claim}"\nTo: ${phoneNumber}\n\nOr copy this message: ${decodeURIComponent(message)}`);
+            }
+        }
+
+        // Initialize page analysis on load
+        document.addEventListener('DOMContentLoaded', function() {
+            analyzePageClaims();
+        });
+
+        // Simulate real-time fact checking (for demo)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Daily Tribune loaded - Fact-checking plugin ready');
+        });
+    </script>
+</body>
+</html>
